@@ -10,6 +10,7 @@ import logging
 app = FastAPI()
 log = logging.getLogger("my-api")
 
+
 class Game(BaseModel):
     secret_code: str
 
