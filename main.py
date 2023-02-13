@@ -33,13 +33,17 @@ async def create_game():
     secret_code = "".join(random.choices(["R", "G", "B", "Y"], k=4))
     nr_game_id = get_next_nr_game()
     collection.insert_one({"secret_code": secret_code, "game_id": nr_game_id})
-    return {"msg": f"Game created successfully. Game ID: {nr_game_id}"}
+    return {"msg": f"Game created successfully. Game ID: {nr_game_id}, secret_code {secret_code}"}
 
 
 @app.get("/game/{id}")
 async def get_game(game_id: int):
     # Implement logic to retrieve game information from database and updating guesses field
-    return {"id": game_id, "secret_code": "RGGB", "guesses": []}
+    game_info = collection.find_one({"game_id": game_id}, {"_id": False, "secret_code": False})
+    guesses = game_info.get("guesses", [])
+    b_pegs = game_info.get("b_pegs", 0)
+    w_pegs = game_info.get("w_pegs", 0)
+    return {"id": game_id, "Previous guesses": guesses, "black pegs": b_pegs, "white pegs": w_pegs}
 
 
 @app.post("/game/{id}/guess")
