@@ -37,7 +37,8 @@ async def create_game():
     secret_code = "".join(random.choices(["R", "G", "B", "Y"], k=NR_CHAR))
     nr_game_id = get_next_nr_game()
     collection.insert_one({"secret_code": secret_code, "game_id": nr_game_id})
-    return {"msg": f"Game created successfully. Game ID: {nr_game_id}, secret_code {secret_code}"}
+    return JSONResponse(content={"msg": f"Game created successfully. Game ID: {nr_game_id}, secret_code {secret_code}"},
+                        status_code=201)
 
 
 @app.get("/game/{game_id}")
@@ -46,22 +47,28 @@ async def get_game(game_id: int):
     guesses = game_info.get("guesses", [])
     b_pegs = game_info.get("b_pegs", 0)
     w_pegs = game_info.get("w_pegs", 0)
-    return {"id": game_id, "Previous guesses": guesses, "black pegs": b_pegs, "white pegs": w_pegs}
+    return JSONResponse(content={"id": game_id,
+                                 "Previous guesses": guesses,
+                                 "black pegs": b_pegs,
+                                 "white pegs": w_pegs},
+                        status_code=200)
 
 
 @app.post("/game/{game_id}/guess")
 async def make_guess(game_id: int, guess: Guess):
+    guess.guess = guess.guess.upper()
     log.info(f"game id: {game_id}, guess: {guess.guess}")
     game_info = collection.find_one_and_update({"game_id": game_id},
                                                {"$push": {"guesses": guess.guess}},
                                                projection={"_id": False, "secret_code": True},
                                                return_document=ReturnDocument.AFTER)
     if game_info["secret_code"] == guess.guess:
-        return {"id": game_id, "secret_code": guess.guess, "msg": "success"}
+        return JSONResponse(content={"id": game_id, "secret_code": guess.guess, "msg": "success"}, status_code=201)
     else:
         b_pegs, w_pegs = check_guess(guess.guess, game_info["secret_code"])
         # TODO: return should be 201 http code
-        return {"id": game_id, "msg": "keep trying", "black pegs": b_pegs, "white pegs": w_pegs}
+        return JSONResponse(content={"id": game_id, "msg": "keep trying", "black pegs": b_pegs, "white pegs": w_pegs},
+                            status_code=201)
 
 
 @app.delete("/game/{game_id}")
