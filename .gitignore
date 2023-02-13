@@ -1,0 +1,5 @@
+# Ignore JetBrains IDEA project files
+.idea/
+
+# Ignore virtual environment
+venv/
