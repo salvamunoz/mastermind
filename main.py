@@ -4,6 +4,7 @@ from pydantic import BaseModel
 from pymongo import ReturnDocument
 from v1.mastermindv1 import get_next_nr_game, check_guess, NR_CHAR
 from core.db_init import collection
+from starlette.responses import JSONResponse
 import random
 import logging
 
@@ -35,6 +36,7 @@ async def create_game():
     # k: number of elements picked randomly
     secret_code = "".join(random.choices(["R", "G", "B", "Y"], k=NR_CHAR))
     nr_game_id = get_next_nr_game()
+    collection.insert_one({"secret_code": secret_code, "game_id": nr_game_id})
     return {"msg": f"Game created successfully. Game ID: {nr_game_id}, secret_code {secret_code}"}
 
 
@@ -58,4 +60,11 @@ async def make_guess(game_id: int, guess: Guess):
         return {"id": game_id, "secret_code": guess.guess, "msg": "success"}
     else:
         b_pegs, w_pegs = check_guess(guess.guess, game_info["secret_code"])
+        # TODO: return should be 201 http code
         return {"id": game_id, "msg": "keep trying", "black pegs": b_pegs, "white pegs": w_pegs}
+
+
+@app.delete("/game/{game_id}")
+async def delete_game(game_id: int):
+    collection.delete_one({"game_id": game_id})
+    return JSONResponse(content={"msg": "deleted"}, status_code=204)
