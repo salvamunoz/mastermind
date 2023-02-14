@@ -12,10 +12,6 @@ app = FastAPI()
 log = logging.getLogger("my-api")
 
 
-class Game(BaseModel):
-    secret_code: str
-
-
 class Guess(BaseModel):
     guess: str
 
@@ -66,7 +62,6 @@ async def make_guess(game_id: int, guess: Guess):
         return JSONResponse(content={"id": game_id, "secret_code": guess.guess, "msg": "success"}, status_code=201)
     else:
         b_pegs, w_pegs = check_guess(guess.guess, game_info["secret_code"])
-        # TODO: return should be 201 http code
         return JSONResponse(content={"id": game_id, "msg": "keep trying", "black pegs": b_pegs, "white pegs": w_pegs},
                             status_code=201)
 
