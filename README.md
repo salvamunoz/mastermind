@@ -59,3 +59,21 @@ uvicorn main:app --reload
 INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
 ````
 7. Open your web browser and navigate to http://127.0.0.1:8000 to access the FASTAPI endpoint
+8. In order to get the api fully working we need a MongoDB instance installed with a database called 
+``mastermind`` with a collection ``games``.
+
+# Docker
+## IMPORTANT
+This hasn't been tested yet on the last part of the docker because my personal computer wasn't able to virtualize due to limitations of the BIOS.
+
+## Generate a new container _(this must be done where the Dockerfile is)_
+### Build Docker image
+````
+docker build -t mastermindapi .
+````
+### Start Docker container
+````
+docker run -d --name containermastermind -p 80:80 mastermindapi
+````
+
+```-d``` is to see logs from Docker
