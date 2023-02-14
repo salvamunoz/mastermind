@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import patch
-from v1.mastermindv1 import get_next_nr_game, check_guess
+from app.v1.mastermindv1 import get_next_nr_game, check_guess
 
 
 class TestGetNextNrGame(unittest.TestCase):

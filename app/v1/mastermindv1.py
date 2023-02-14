@@ -1,4 +1,4 @@
-from core.db_init import collection
+from app.core.db_init import collection
 NR_CHAR = 4
 
 

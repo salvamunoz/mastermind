@@ -2,8 +2,8 @@ from fastapi import FastAPI
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from pymongo import ReturnDocument
-from v1.mastermindv1 import get_next_nr_game, check_guess, NR_CHAR
-from core.db_init import collection
+from app.v1.mastermindv1 import get_next_nr_game, check_guess, NR_CHAR
+from app.core.db_init import collection
 import random
 import logging
 
